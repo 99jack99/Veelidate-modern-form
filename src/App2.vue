@@ -4,13 +4,21 @@ import { required, email } from "@vuelidate/validators";
 import { reactive } from "vue";
 
 let user_data = reactive({
-  user: "",
+  name: "",
   email: "",
+  password: {
+    password: "",
+    repeat: "",
+  },
 });
 
 let user_validations = {
-  user: { required },
+  name: { required },
   email: { required, email },
+  password: {
+    password: { required },
+    repeat: { required },
+  },
 };
 
 const v$ = useVuelidate(user_validations, user_data);
@@ -23,20 +31,16 @@ const submit = () => {
 </script>
 
 <template>
+  <h1>Form with Vuelidate</h1>
   <!-- form -->
   <div class="card">
     <!-- input -->
     <div class="boxy">
       <div class="input-box">
-        <input
-          v-model="user_data.user"
-          type="text"
-          id="email"
-          placeholder=" "
-        />
-        <label for="email">User</label>
+        <input v-model="user_data.name" type="text" id="name" placeholder=" " />
+        <label for="name">Name</label>
       </div>
-      <div class="errorbox" v-for="error in v$.user.$errors" :key="error.$uid">
+      <div class="errorbox" v-for="error in v$.name.$errors" :key="error.$uid">
         {{ error.$message }}
       </div>
     </div>
@@ -52,6 +56,46 @@ const submit = () => {
         <label for="email">Email</label>
       </div>
       <div class="errorbox" v-for="error in v$.email.$errors" :key="error.$uid">
+        {{ error.$message }}
+      </div>
+    </div>
+
+    <!-- input -->
+    <div class="boxy">
+      <div class="input-box">
+        <input
+          v-model="user_data.password.password"
+          type="password"
+          id="password"
+          placeholder=" "
+        />
+        <label for="password">Password</label>
+      </div>
+      <div
+        class="errorbox"
+        v-for="error in v$.password.password.$errors"
+        :key="error.$uid"
+      >
+        {{ error.$message }}
+      </div>
+    </div>
+
+    <!-- input -->
+    <div class="boxy">
+      <div class="input-box">
+        <input
+          v-model="user_data.password.repeat"
+          type="password"
+          id="password_repeat"
+          placeholder=" "
+        />
+        <label for="password_repeat">Confirm Password</label>
+      </div>
+      <div
+        class="errorbox"
+        v-for="error in v$.password.repeat.$errors"
+        :key="error.$uid"
+      >
         {{ error.$message }}
       </div>
     </div>
@@ -74,11 +118,11 @@ const submit = () => {
   background-color: red;
   padding: 10px 10px;
   border-radius: 10px;
-  margin-block: 5px 10px;
+  margin-bottom: 10px;
   width: 350px;
 }
 .card {
-  background-color: lightblue;
+  background-color: #099b6d;
   padding: 10px 30px;
   border-radius: 20px;
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
@@ -92,34 +136,24 @@ const submit = () => {
 
 .button {
   width: 350px;
-  background-color: #f78ca2;
+  background-color: #3f3f46;
   border-radius: 10px;
   padding: 10px 20px;
-  color: #191717;
+  color: white;
   display: flex;
   justify-content: center;
   align-items: center;
   border: none;
 }
 
-/* .testi {
-  width: 350px;
-  border: none;
-  background-color: #141e46;
-  transition: 0.5s;
-  border-radius: 10px;
-  padding: 10px 20px;
-  color: #fff5e0;
-} */
-
 input {
   width: 350px;
   border: none;
-  background-color: #141e46;
+  background-color: #ffffff;
   transition: 0.5s;
   border-radius: 10px;
   padding: 10px 20px;
-  color: #fff5e0;
+  color: black;
 }
 
 .input-box input:focus {
@@ -134,7 +168,7 @@ label {
   display: flex;
   align-items: center;
   transition: 0.5s;
-  color: #fff5e0;
+  color: black;
   margin-left: 10px;
 }
 
