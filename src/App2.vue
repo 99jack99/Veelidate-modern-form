@@ -1,8 +1,11 @@
 <script setup lang="ts">
-import { useVuelidate } from "@vuelidate/core";
-import { required, email } from "@vuelidate/validators";
-import { reactive } from "vue";
+import { reactive, computed } from "vue";
 
+/* Import methods and validators that you might want */
+import { useVuelidate } from "@vuelidate/core";
+import { required, email, minLength, sameAs } from "@vuelidate/validators";
+
+/* 1.  Create models according to fields that you need */
 let user_data = reactive({
   name: "",
   email: "",
@@ -12,21 +15,25 @@ let user_data = reactive({
   },
 });
 
-let user_validations = {
-  name: { required },
-  email: { required, email },
-  password: {
-    password: { required },
-    repeat: { required },
-  },
-};
+/* 2. Replicate the field model with rules that you want to be fulfilled */
+let user_validations = computed(() => {
+  return {
+    name: { required },
+    email: { required, email },
+    password: {
+      password: { required, minLenght: minLength(6) },
+      repeat: { required, sameAs: sameAs(user_data.password.password) },
+    },
+  };
+});
 
+/* 3. Call validation method from vuelidate, 2 params... model and rules */
 const v$ = useVuelidate(user_validations, user_data);
 
-const submit = () => {
-  const result = v$.value.$validate();
-
-  console.log(result);
+/* This method will be our Api(in this case, its just an example) */
+const submit = async () => {
+  const result = await v$.value.$validate();
+  result ? alert("Data sent correctly!🥳") : alert("Please😿, check data");
 };
 </script>
 
@@ -39,6 +46,7 @@ const submit = () => {
       <!-- input -->
       <div class="field-box">
         <div class="input-box">
+          <!-- 4. Connect your field with your models created -->
           <input
             v-model="user_data.name"
             type="text"
@@ -47,6 +55,7 @@ const submit = () => {
           />
           <label for="name">Name</label>
         </div>
+        <!-- We can call out error so we can represent it in our template -->
         <div class="error" v-for="error in v$.name.$errors" :key="error.$uid">
           {{ error.$message }}
         </div>
@@ -138,7 +147,6 @@ const submit = () => {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-
   background-color: #099b6d;
   padding: 40px;
   border-radius: 15px;
@@ -169,8 +177,9 @@ input {
   background-color: #ffffff;
   transition: 0.5s;
   border-radius: 10px;
-  padding: 10px 20px;
+  padding: 10px 15px;
   color: #161618;
+  font-size: 16px;
 }
 
 label {
@@ -179,7 +188,7 @@ label {
   display: flex;
   align-items: center;
   transition: 0.5s;
-  color: #161618;
+  color: #3f3f46;
   margin-left: 10px;
   font-weight: 600;
 }
