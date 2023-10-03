@@ -3,7 +3,17 @@ import { reactive, computed } from "vue";
 
 /* Import methods and validators that you might want */
 import { useVuelidate } from "@vuelidate/core";
-import { required, email, minLength, sameAs } from "@vuelidate/validators";
+import {
+  required,
+  email,
+  minLength,
+  sameAs,
+  helpers,
+} from "@vuelidate/validators";
+
+const pwd_condition = helpers.regex(
+  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[#$@!%&*?])[A-Za-z\d#$@!%&*?]{8,30}$/
+);
 
 /* 1.  Create models according to fields that you need */
 let user_data = reactive({
@@ -21,8 +31,15 @@ let user_validations = computed(() => {
     name: { required },
     email: { required, email },
     password: {
-      password: { required, minLenght: minLength(6) },
-      repeat: { required, sameAs: sameAs(user_data.password.password) },
+      password: {
+        required,
+        minLenght: minLength(6),
+        pwd_condition: helpers.withMessage(
+          "Min 1 uppercase, Min 1 lowercase, Min 1 special character, Min 1 number, Min 8 characters",
+          pwd_condition
+        ),
+      },
+      repeat: { sameAs: sameAs(user_data.password.password) },
     },
   };
 });
